@@ -21,3 +21,18 @@
 9. **testing/deployment** – Тестирование и деплой
 
 10. **documentation/final** – Финальная документация
+
+#### Ветка **init/setup**
+
+1. Определится со стеком:
+    - **Backend**: Python + FastAPI, 
+    - **BD**: PostgreSQL, 
+    - **ORM**: SQLAlchemy, 
+    - **HTML генерация**: htpy, 
+    - **ASGI сервер**: uvicorn.
+
+2. Создать виртуальное окружение ```Python```
+
+3. Cформировать файл ```requirements.txt``` 
+
+4. Настроить ```.gitignore``` (исключить папку с виртуальным окружением)
