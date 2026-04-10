@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request,WebSocket
 import htpy as ht
+from .websocket_service import connection
 
 app = FastAPI()
 
@@ -15,5 +16,10 @@ async def root(request: Request):
 
     else:
         return {'Error: Accept: text/html not found in headers'}
+
+@app.websocket('/ws')
+async def websocket_endpoint(websocket: WebSocket):
+    await connection(websocket)
+
 
     
