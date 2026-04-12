@@ -1,7 +1,7 @@
 import websockets, asyncio, random
 
 
-messages = ['Классная тема!', 'Интересная тема!','Ты генийЙ!']
+messages = ['Классная тема!', 'Интересная тема!','Ты гений!']
 
 async def main():
     uri = "ws://127.0.0.1:8000/ws"
