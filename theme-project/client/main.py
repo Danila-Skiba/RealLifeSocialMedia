@@ -6,7 +6,7 @@ import os
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="client/static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
@@ -29,6 +29,6 @@ async def root(request: Request):
     else:
         return {'Error: Accept: text/html not found in headers'}
     
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+# if __name__ == '__main__':
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8001)
