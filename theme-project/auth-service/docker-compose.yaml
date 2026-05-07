@@ -1,0 +1,20 @@
+services:
+  auth-service:
+    build:
+      contex: .
+      dockerfile: Dockerfile
+    conainer_name: omstu-auth
+    ports: 
+      - 8002:8000
+    environment:
+      - DATABASE_URL=postgresql://omstu:${POSTGRES_PASSWORD}@omstu-postgres/omstu_db
+      - SECRET_KEY=${SECRET_KEY}  
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    networks:
+      - omstu-network
+    restart: unless-stopped
+
+networks:
+  omstu-network:
+    external: true
