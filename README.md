@@ -61,7 +61,7 @@ users
 ---
 
 ### 3. News Service
-**Роль:** Отдаёт новости университета и изображения к ним. Данные поставляет Airflow — парсит сайт ОмГТУ раз в сутки и сохраняет в файловое хранилище. News-service только читает файлы и отдаёт клиенту. БД не используется — хранилище файловое.
+**Роль:** Отдаёт новости университета и изображения к ним. Скрипт парсит сайт ОмГТУ раз в сутки и сохраняет в файловое хранилище. News-service только читает файлы и отдаёт клиенту. БД не используется — хранилище файловое.
 
 | Вызов микросервиса | Зависимость от БД | Внешние вызовы |
 |---|---|---|
@@ -86,8 +86,9 @@ data/
 
 | Вызов микросервиса | Зависимость от БД | Внешние вызовы |
 |---|---|---|
-| `GET /schedule/{group_id}` | SELECT/INSERT → `schedule_cache` | API ОмГТУ (если кэш устарел) |
+| `GET /schedule/group/{id}` | SELECT/INSERT → `schedule_cache` | API ОмГТУ (если кэш устарел) |
 | `GET /schedule/teacher/{id}` | SELECT/INSERT → `schedule_cache` | API ОмГТУ (если кэш устарел) |
+| `GET /schedule/auditory/{id}` | SELECT/INSERT → `schedule_cache` | API ОмГТУ (если кэш устарел) |
 | `POST /tasks` | INSERT → `personal_tasks` | — |
 | `GET /tasks` | SELECT → `personal_tasks` | — |
 | `DELETE /tasks/{id}` | DELETE → `personal_tasks` | — |
@@ -189,8 +190,9 @@ Flutter App
 | `GET /api/news/images/{id}` | ✅ открытый |
 | `POST /api/auth/register` | ✅ открытый |
 | `POST /api/auth/login` | ✅ открытый |
-| `GET /api/schedule/{group_id}` | ✅ открытый |
+| `GET /api/schedule/group/{id}` | ✅ открытый |
 | `GET /api/schedule/teacher/{id}` | ✅ открытый |
+| `GET /api/schedule/auditory/{id}` | ✅ открытый |
 | `GET /api/tasks` | 🔒 JWT required |
 | `POST /api/tasks` | 🔒 JWT required |
 | `DELETE /api/tasks/{id}` | 🔒 JWT required |
@@ -207,7 +209,6 @@ Flutter App
 | ORM | SQLAlchemy 2.0 |
 | БД | PostgreSQL 15 |
 | Контейнеризация | Docker + docker-compose |
-| Оркестрация задач | Apache Airflow |
 | ИИ | GigaChat API (vision) |
 | Авторизация | JWT (python-jose) |
 | Хэширование паролей | bcrypt |
