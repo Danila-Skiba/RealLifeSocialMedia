@@ -1,9 +1,9 @@
 services:
   auth-service:
     build:
-      contex: .
+      context: .
       dockerfile: Dockerfile
-    conainer_name: omstu-auth
+    container_name: omstu-auth
     ports: 
       - 8002:8000
     environment:
