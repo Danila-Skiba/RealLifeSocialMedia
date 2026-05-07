@@ -1,0 +1,24 @@
+networks:
+  omstu-network:
+    name: omstu-network
+    driver: bridge
+
+volumes:
+  postgres-data:
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5430:5432" 
+    container_name: omstu-postgres
+    environment:
+      POSTGRES_USER: omstu
+      POSTGRES_PASSWORD: omstu
+      POSTGRES_DB: omstu_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - omstu-network
+    restart: unless-stopped
+

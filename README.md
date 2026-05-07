@@ -108,7 +108,6 @@ personal_tasks
   title       VARCHAR NOT NULL
   description TEXT
   deadline    TIMESTAMP
-  group_id    VARCHAR             -- к какой группе привязана
   created_at  TIMESTAMP
 ```
 
