@@ -1,0 +1,1 @@
+0 8 * * * python /app/parser/news_parser.py >> /var/log/parser.log 2>&1

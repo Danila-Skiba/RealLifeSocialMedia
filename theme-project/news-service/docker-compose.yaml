@@ -1,0 +1,17 @@
+services:
+  news-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omstu-news
+    ports: 
+      - 8001:8000
+    volumes:
+      - ./data:/app/data   
+    networks:
+      - omstu-network
+    restart: unless-stopped
+
+networks:
+  omstu-network:
+    external: true
