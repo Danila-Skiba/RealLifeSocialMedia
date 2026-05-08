@@ -1,0 +1,19 @@
+services:
+  lecture-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omstu-lecture
+    ports: 
+      - 8004:8000
+    environment:
+      - DATABASE_URL=postgresql://omstu:${POSTGRES_PASSWORD}@omstu-postgres/omstu_db
+      - GIGACHAT_API=${GIGACHAT_API}
+      - GIGACHAT_SCOPE=${GIGACHAT_SCOPE}
+    networks:
+      - omstu-network
+    restart: unless-stopped
+
+networks:
+  omstu-network:
+    external: true

@@ -1,9 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
-
-
 from app.database import get_db
 from app.models.lecture import Session, Fragment
-
 
 router = APIRouter(prefix="/lectures", tags=["lectures"])
 
