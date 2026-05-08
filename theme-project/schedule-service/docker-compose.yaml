@@ -1,0 +1,18 @@
+services:
+  schedule-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omstu-schedule
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=postgresql://omstu:${POSTGRES_PASSWORD}@omstu-postgres/omstu_db
+      - SCHEDULE_TTL_HOURS=2
+    networks:
+      - omstu-network
+    restart: unless-stopped
+
+networks:
+  omstu-network:
+    external: true
