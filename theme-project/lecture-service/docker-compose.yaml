@@ -10,6 +10,7 @@ services:
       - DATABASE_URL=postgresql://omstu:${POSTGRES_PASSWORD}@omstu-postgres/omstu_db
       - GIGACHAT_API=${GIGACHAT_API}
       - GIGACHAT_SCOPE=${GIGACHAT_SCOPE}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
     networks:
       - omstu-network
     restart: unless-stopped
