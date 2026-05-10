@@ -49,7 +49,7 @@ services:
     ports:
       - "8001:8000"
     volumes:
-      - ./data:/app/data
+      - ./theme-project/news-service/data:/app/data
     networks:
       - omstu-network
     restart: unless-stopped
