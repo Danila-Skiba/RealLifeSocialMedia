@@ -1,0 +1,20 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omstu-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - AUTH_SERVICE_URL=http://omstu-auth:8000
+      - NEWS_SERVICE_URL=http://omstu-news:8000
+      - SCHEDULE_SERVICE_URL=http://omstu-schedule:8000
+      - LECTURE_SERVICE_URL=http://omstu-lecture:8000
+    networks:
+      - omstu-network
+    restart: unless-stopped
+
+networks:
+  omstu-network:
+    external: true

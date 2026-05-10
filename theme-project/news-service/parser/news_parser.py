@@ -8,7 +8,7 @@ import json
 
 
 BASE_URL = 'https://www.omgtu.ru/news/'
-DATA_PATH = './data'
+DATA_PATH = '../data'
 
 def get_news_id(url):
     index = url.find('eid=')
