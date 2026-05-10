@@ -57,7 +57,7 @@ def create_session(
     }
 
 @router.post("/session/{session_id}/data")
-def load_photo(
+async def load_photo(
     session_id: str,
     comment: str,
     file: UploadFile = File(...),
@@ -70,14 +70,17 @@ def load_photo(
     if str(session.user_id) != user_id:
         raise HTTPException(status_code=403, detail="You are not owner of this session")
     
-    image_bytes = file.file.read()
+    image_bytes = await file.read()
     if len(image_bytes) > 15* 1024**2:
         raise HTTPException(status_code=400, detail="Image size must be less than 15MB")
 
     try:
-        md_text, gigachat_image_id = send_photo(image_bytes, file.filename or "image.jpg", comment)
+        import asyncio
+        md_text, gigachat_image_id = await asyncio.to_thread(
+            send_photo, image_bytes, file.filename or "image.jpg", comment
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to send photo to Gigachat")
+        raise HTTPException(status_code=500, detail=f"Failed to send photo to Gigacha {e}")
 
     last_fragment = db.query(Fragment).filter_by(session_id = session_id).order_by(Fragment.index.desc()).first()
     index = (last_fragment.index + 1) if last_fragment else 1
@@ -99,7 +102,7 @@ def load_photo(
     }
 
 @router.post("/session/{session_id}/compile")
-def compile(
+async def compile(
     session_id: str,
     user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
@@ -126,7 +129,10 @@ def compile(
     db.query(Fragment).filter_by(session_id=session_id).delete()
     db.commit()
 
-    return Response(content=md_content, media_type="text/markdown", headers={'Content-Disposition': f'attachment; filename="{session.subject}-{session.compiled_at}lecture.md"'} )
+    return {
+        "md_content": md_content,
+        "session_id": str(session.id)
+    }
     
 
 @router.get("/lectures")

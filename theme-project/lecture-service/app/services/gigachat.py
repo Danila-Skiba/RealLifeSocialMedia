@@ -39,7 +39,6 @@ STRUCTURE_PROMPT = """
 def get_client() -> GigaChat:
     return GigaChat(
         credentials = settings.GIGACHAT_API,
-        scope=settings.GIGACHAT_SCOPE,
         model="GigaChat-Pro",
         verify_ssl_certs=False,
     )
@@ -52,18 +51,22 @@ def send_photo(image: bytes, filename: str, comment: str):
             (filename, io.BytesIO(image), "image/jpeg"),
             purpose='general'
         )
-        if comment:
-            VISION_PROMPT += f"\n\nДополнительная просьба от студента: {comment}"
 
-        response = client.chat(
-            Chat(messages = [
-                Messages(
-                    role=MessagesRole.USER,
-                    content=VISION_PROMPT,
-                    attachments=[upload_file.id_], 
-                )
-            ])
-        )
+        content = VISION_PROMPT
+        if comment:
+            content += f"\n\nДополнительная просьба от студента: {comment}"
+        try: 
+            response = client.chat(
+                Chat(messages = [
+                    Messages(
+                        role=MessagesRole.USER,
+                        content=content,
+                        attachments=[upload_file.id_]
+                    )
+                ])
+            )
+        except Exception as e:
+            print(f"  Ошибка запроса: {e}")
         return response.choices[0].message.content, upload_file.id_
     
 def compile_fragments(fragments: list[str], subject: str):
