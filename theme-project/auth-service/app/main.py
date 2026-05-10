@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.security import HTTPBearer
 from app.routers import auth
 
 
@@ -7,6 +8,7 @@ app = FastAPI(
     description='Сервис Авторизации',
 )
 
+security = HTTPBearer()
 app.include_router(auth.router)
 
 

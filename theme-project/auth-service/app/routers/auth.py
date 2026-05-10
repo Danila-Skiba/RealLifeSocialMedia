@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -11,7 +12,7 @@ from app.schemas.auth import (
 
 from app.services.auth import hash_password, verify_password, create_access_token, decode_token
 
-
+security = HTTPBearer()
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse)
@@ -45,11 +46,14 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-def me(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
-    if not authorization or not authorization.startswith("Bearer "):
+def me(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)):
+
+    if not credentials:
         raise HTTPException(status_code=401, detail="Токен не передан")
  
-    token = authorization.split(" ")[1]
+    token = credentials.credentials
     payload = decode_token(token)
  
     if not payload:
@@ -63,11 +67,15 @@ def me(authorization: Optional[str] = Header(None), db: Session = Depends(get_db
 
 
 @router.get("/validate", response_model=ValidateResponse)
-def validate(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
-    if not authorization or not authorization.startswith("Bearer "):
+def validate(
+    
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)):
+
+    if not credentials:
         return ValidateResponse(valid=False)
  
-    token = authorization.split(" ")[1]
+    token = credentials.credentials
     payload = decode_token(token)
  
     if not payload:
