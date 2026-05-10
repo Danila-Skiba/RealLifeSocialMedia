@@ -16,9 +16,9 @@ def get_news():
     with open(NEWS_FILE, 'r', encoding='utf-8') as f:
         news = json.load(f)
 
-    news.sort(key = lambda x: x['date'], reverse= True)
+    news.sort(key = lambda x: x['date'], reverse=True)
 
-    return news[:20]
+    return news
 
 @app.get("/images/{news_id}")
 async def get_image(news_id: str):
