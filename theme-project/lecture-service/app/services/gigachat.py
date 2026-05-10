@@ -12,8 +12,7 @@ VISION_PROMPT = """
    - Блочные формулы: $$формула$$
 3. Сохраняй структуру: заголовки, списки, нумерацию
 4. Если текст нечёткий — восстанови по контексту
-5. Дополни конспект по просьбе в комментарии {comment}
-6. Если комментариев нет, отвечай ТОЛЬКО содержимым
+5. Если комментариев нет, отвечай ТОЛЬКО содержимым
 
 Формат ответа — чистый Markdown.
 """
@@ -53,14 +52,14 @@ def send_photo(image: bytes, filename: str, comment: str):
             (filename, io.BytesIO(image), "image/jpeg"),
             purpose='general'
         )
+        if comment:
+            VISION_PROMPT += f"\n\nДополнительная просьба от студента: {comment}"
 
         response = client.chat(
             Chat(messages = [
                 Messages(
                     role=MessagesRole.USER,
-                    content=VISION_PROMPT.format(
-                        comment  = comment
-                    ),
+                    content=VISION_PROMPT,
                     attachments=[upload_file.id_], 
                 )
             ])

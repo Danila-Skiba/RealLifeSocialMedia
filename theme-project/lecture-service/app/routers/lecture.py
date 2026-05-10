@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File
 from app.database import get_db
 from fastapi.responses import Response
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.models.lecture import Session, Fragment
 from sqlalchemy.orm import Session as DBSession
 from app.config import settings
@@ -9,16 +10,18 @@ import uuid
 from datetime import datetime
 import httpx
 
+security = HTTPBearer()
 router = APIRouter(prefix="/lectures", tags=["lectures"])
 
-def get_user_id(authorization: str = Header(None)) -> str:
-    if not authorization or not authorization.startswith("Bearer "):
+def get_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+    if not credentials:
         raise HTTPException(status_code=401, detail="Токен не передан")
 
+    token = credentials.credentials
     try:
         response = httpx.get(
             f"{settings.AUTH_SERVICE_URL}/auth/validate",
-            headers={"Authorization": authorization},
+            headers={"Authorization": f"Bearer {token}"},
             timeout = 5
         )
         data = response.json()
@@ -35,11 +38,9 @@ def get_user_id(authorization: str = Header(None)) -> str:
 @router.post("/session")
 def create_session(
     subject: str,
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
     ):
-    user_id = get_user_id(authorization)
-
     session = Session(
         user_id=uuid.UUID(user_id),
         subject = subject
@@ -60,10 +61,9 @@ def load_photo(
     session_id: str,
     comment: str,
     file: UploadFile = File(...),
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
 ):
-    user_id = get_user_id(authorization)
     session = db.query(Session).filter(Session.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -101,11 +101,10 @@ def load_photo(
 @router.post("/session/{session_id}/compile")
 def compile(
     session_id: str,
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
 ):
     
-    user_id = get_user_id(authorization)
     
     session = db.query(Session).filter_by(id=session_id).first()
 
@@ -132,10 +131,9 @@ def compile(
 
 @router.get("/lectures")
 def get_lectures(
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
 ):
-    user_id = get_user_id(authorization)
     sessions = db.query(Session).filter_by(user_id=uuid.UUID(user_id)).order_by(Session.created_at.desc()).all()
 
     return [
@@ -154,10 +152,10 @@ def get_lectures(
 @router.get("/session/{session_id}")
 def get_session(
     session_id: str,
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
 ):
-    user_id = get_user_id(authorization)
+    
 
     session = db.query(Session).filter_by(id=session_id).first()
     if not session:
@@ -179,10 +177,9 @@ def get_session(
 @router.delete("/session/{session_id}")
 def delete_session(
     session_id: str,
-    authorization: str = Header(None),
+    user_id: str = Depends(get_user_id),
     db: DBSession = Depends(get_db)
 ):
-    user_id = get_user_id(authorization)
 
     session = db.query(Session).filter_by(id = session_id).first()
     if not session:
