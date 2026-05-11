@@ -2,3 +2,5 @@ venv/
 *.env
 data/
 todo.md
+stats.txt
+timings.csv
