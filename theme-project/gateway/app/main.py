@@ -15,7 +15,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# ── Маршруты ─────────────────────────────────────────
+# Маршруты
 ROUTES = {
     "/api/auth":     AUTH_SERVICE_URL,
     "/api/news":     NEWS_SERVICE_URL,
@@ -40,12 +40,9 @@ async def validate_token(token: str) -> bool:
 
 
 async def proxy(request: Request, target_url: str) -> Response:
-    """Проксирует запрос в нужный сервис."""
     async with httpx.AsyncClient() as client:
-        # Читаем тело запроса
         body = await request.body()
 
-        # Формируем запрос к сервису
         response = await client.request(
             method=request.method,
             url=target_url,
@@ -67,7 +64,6 @@ async def proxy(request: Request, target_url: str) -> Response:
 async def gateway(request: Request, path: str):
     full_path = f"/api/{path}"
 
-    # Находим нужный сервис
     target_base = None
     service_prefix = None
     for prefix, url in ROUTES.items():
@@ -78,8 +74,7 @@ async def gateway(request: Request, path: str):
 
     if not target_base:
         raise HTTPException(status_code=404, detail="Маршрут не найден")
-
-    # Проверяем авторизацию для защищённых маршрутов
+    
     if any(full_path.startswith(p) for p in PROTECTED_PREFIXES):
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
