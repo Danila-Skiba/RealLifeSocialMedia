@@ -10,7 +10,7 @@ UPLOAD_FOLDER = './data/images'
 def get_image_path(id: str):
     return os.path.join(UPLOAD_FOLDER, f'{id}/image.jpg')
 
-@app.get("/news")
+@app.get("/")
 def get_news():
     
     with open(NEWS_FILE, 'r', encoding='utf-8') as f:
@@ -20,9 +20,25 @@ def get_news():
 
     return news
 
+# @app.get("/images/{news_id}")
+# async def get_image(news_id: str):
+#     image_path = get_image_path(news_id)
+
+#     if not os.path.exists(image_path):
+#         raise HTTPException(status_code=404, detail="Image not found")
+    
+#     return FileResponse(
+#         image_path,
+#         media_type='image/jpeg',
+#         headers={"Cache-Control": "public, max-age=86400"}
+#     )
+
 @app.get("/images/{news_id}")
 async def get_image(news_id: str):
     image_path = get_image_path(news_id)
+    print(f"Ищем файл: {image_path}")
+    print(f"Существует: {os.path.exists(image_path)}")
+    print(f"CWD: {os.getcwd()}")
 
     if not os.path.exists(image_path):
         raise HTTPException(status_code=404, detail="Image not found")
